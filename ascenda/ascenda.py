@@ -3,6 +3,7 @@ import os.path
 import json
 import numbers
 import multiprocessing
+import concurrent.futures
 
 from flask import Flask
 from flask import Blueprint
@@ -12,6 +13,7 @@ from . import hotel
 
 num_cores = multiprocessing.cpu_count()
 request_lock = multiprocessing.Lock()
+task_lock = multiprocessing.Lock()
 
 bp = Blueprint('ascenda', __name__)
 
@@ -32,15 +34,20 @@ def request_json_data(url, jsons):
 
 
 def build_hotel_list():
-    threadpool = multiprocessing.Pool(processes = num_cores)
-
+    task_lock.acquire()
     jsons = []
-    async_handles = []
-    for url in urls:
-        async_handles.append(threadpool.apply_async(request_json_data(url, jsons)))
+    #async_handles = []
+    # for url in urls:
+    #     request_json_data(url, jsons)
+        #async_handles.append(threadpool.apply_async(request_json_data(url, jsons)))
 
-    for handle in async_handles:
-         handle.wait()
+    # for handle in async_handles:
+    #      handle.wait()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=num_cores) as executor:
+        futures = []
+        for url in urls:
+            futures.append(executor.submit(request_json_data, url=url, jsons=jsons))
+        concurrent.futures.wait(futures)
 
     hotels = []
 
@@ -84,11 +91,11 @@ def build_hotel_list():
                 hotels[-1].corresponding_jsons.append(current_hotel)
         
 
-    for hot in hotels:
-        threadpool.apply_async(hot.read_json_data())
-
-    threadpool.close()
-    threadpool.join()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=num_cores) as executor:
+        futures = []
+        for hot in hotels:
+            futures.append(executor.submit(hot.read_json_data()))
+        concurrent.futures.wait(futures)
 
     # Dump to json
     # js = []
@@ -98,6 +105,7 @@ def build_hotel_list():
     # with open(os.getcwd() + '/' + "out" + ".json", 'w') as outfile:
     #     json.dump(js, outfile)
 
+    task_lock.release()
     return hotels
 
 @bp.route('/hotel_id=<list:ids>/', methods = ['GET'])
