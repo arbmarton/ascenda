@@ -2,7 +2,6 @@ import json
 
 from . import country_codes
 
-
 class Hotel:
     def __init__(self):
         self.corresponding_jsons = []
@@ -24,12 +23,13 @@ class Hotel:
         self.amenity_images = [] 
         self.booking_conditions = []
 
-    possible_name_strings = ["name", "hotel_name", "Name"]
+    
     def __parse_name_data(self):
         names_dict = {} # Dictionary to count the occurences
 
+        possible_name_strings = ["name", "hotel_name", "Name"]
         for current_json in self.corresponding_jsons:
-            for str in Hotel.possible_name_strings:
+            for str in possible_name_strings:
                 if str in current_json:
                     hotel_name = current_json[str]
                     if hotel_name in names_dict:

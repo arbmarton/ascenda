@@ -11,7 +11,7 @@ from . import hotel
 
 
 num_cores = multiprocessing.cpu_count()
-lock = multiprocessing.Lock()
+request_lock = multiprocessing.Lock()
 
 bp = Blueprint('ascenda', __name__)
 
@@ -23,24 +23,24 @@ urls = [
     "https://5f2be0b4ffc88500167b85a0.mockapi.io/suppliers/paperflies"
     ]
 
+def request_json_data(url, jsons):
+    js = requests.get(url).json()
+
+    request_lock.acquire()
+    jsons.append(js)
+    request_lock.release()
+
 
 def build_hotel_list():
     threadpool = multiprocessing.Pool(processes = num_cores)
 
     jsons = []
+    async_handles = []
     for url in urls:
-        # filename = url.split('/')[-1]
-        # fullFilename = os.getcwd() + '/' + filename + ".json"
+        async_handles.append(threadpool.apply_async(request_json_data(url, jsons)))
 
-        # if os.path.isfile(fullFilename):
-        #     with open(fullFilename) as json_file:
-        #         jsons.append(json.load(json_file))
-        # else:
-        #     r = requests.get(url)
-        #     with open(fullFilename, 'w') as outfile:
-        #         json.dump(r.json(), outfile)
-
-        jsons.append(requests.get(url).json())
+    for handle in async_handles:
+         handle.wait()
 
     hotels = []
 
@@ -83,7 +83,7 @@ def build_hotel_list():
                 hotels[-1].destination_id = current_destination_id
                 hotels[-1].corresponding_jsons.append(current_hotel)
         
-    # Can be paralellized
+
     for hot in hotels:
         threadpool.apply_async(hot.read_json_data())
 
