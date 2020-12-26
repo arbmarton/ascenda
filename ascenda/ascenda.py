@@ -13,7 +13,6 @@ from . import hotel
 
 num_cores = multiprocessing.cpu_count()
 request_lock = multiprocessing.Lock()
-task_lock = multiprocessing.Lock()
 
 bp = Blueprint('ascenda', __name__)
 
@@ -34,7 +33,6 @@ def request_json_data(url, jsons):
 
 
 def build_hotel_list():
-    task_lock.acquire()
     jsons = []
     #async_handles = []
     # for url in urls:
@@ -105,7 +103,6 @@ def build_hotel_list():
     # with open(os.getcwd() + '/' + "out" + ".json", 'w') as outfile:
     #     json.dump(js, outfile)
 
-    task_lock.release()
     return hotels
 
 @bp.route('/hotel_id=<list:ids>/', methods = ['GET'])
