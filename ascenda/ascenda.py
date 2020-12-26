@@ -147,3 +147,7 @@ def query_destination_id(id):
         retval += "]"
 
     return retval
+
+@bp.route('/', methods= ['GET'])
+def default_route():
+    return "Hello"
