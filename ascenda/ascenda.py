@@ -34,13 +34,7 @@ def request_json_data(url, jsons):
 
 def build_hotel_list():
     jsons = []
-    #async_handles = []
-    # for url in urls:
-    #     request_json_data(url, jsons)
-        #async_handles.append(threadpool.apply_async(request_json_data(url, jsons)))
 
-    # for handle in async_handles:
-    #      handle.wait()
     with concurrent.futures.ThreadPoolExecutor(max_workers=num_cores) as executor:
         futures = []
         for url in urls:

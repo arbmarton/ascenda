@@ -1,4 +1,6 @@
 {
     "python.pythonPath": "d:\\Dev\\Misc\\ascenda\\venv\\Scripts\\python.exe",
-    "workbench.editor.enablePreview": false
+    "workbench.editor.enablePreview": false,
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true
 }
