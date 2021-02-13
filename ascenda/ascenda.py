@@ -152,47 +152,10 @@ def query_complex():
 
     hotels = build_hotel_list()
 
-    #retval = list()
-
     retval = [hot.to_json() for hot in hotels if (str(hot.id) in hotel_ids or str(hot.destination_id) in destination_ids )]
 
-    # for hot in hotels:
-    #     hotel_found = False
-
-    #     size = len(retval)
-
-    #     # [x for x in fruits if "a" in x]
-    #     retval.extend([hot.to_json() for dest in destination_ids if str(hot.destination_id) == dest])
-
-
-    #     if (len(retval) != size):
-    #         continue
-    #     # for dest in destination_ids:
-    #     #     if str(hot.destination_id) == dest:
-
-    #     #         retval.append(hot.to_json()) # Convert to string and add to return value
-    #     #         hotel_found = True
-
-    #     retval.extend([hot.to_json() for hotel_id in hotel_ids if str(hot.id) == hotel_id])
-
-    #     # if hotel_found:
-    #     #     continue
-
-    #     # for hotel_id in hotel_ids:
-    #     #     if hot.id == hotel_id:
-
-    #     #         retval.append(hot.to_json()) # Convert to string and add to return value
 
     return json.dumps(retval)
-
-    # # Add the braces
-    # if retval != "":
-    #     retval = "[" + retval
-    #     retval += "]"        
-
-    # #return query_params
-    # return retval
-
 
 
 @bp.route('/', methods= ['GET'])
