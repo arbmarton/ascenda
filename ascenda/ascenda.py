@@ -7,6 +7,7 @@ import concurrent.futures
 
 from flask import Flask
 from flask import Blueprint
+from flask import request
 
 from . import hotel
 
@@ -141,6 +142,58 @@ def query_destination_id(id):
         retval += "]"
 
     return retval
+
+@bp.route('/complex/', methods = ['GET'])
+def query_complex():
+    query_params = request.args
+
+    destination_ids = query_params["destination_id"].split(',')
+    hotel_ids = query_params["hotel_id"].split(',')
+
+    hotels = build_hotel_list()
+
+    #retval = list()
+
+    retval = [hot.to_json() for hot in hotels if (str(hot.id) in hotel_ids or str(hot.destination_id) in destination_ids )]
+
+    # for hot in hotels:
+    #     hotel_found = False
+
+    #     size = len(retval)
+
+    #     # [x for x in fruits if "a" in x]
+    #     retval.extend([hot.to_json() for dest in destination_ids if str(hot.destination_id) == dest])
+
+
+    #     if (len(retval) != size):
+    #         continue
+    #     # for dest in destination_ids:
+    #     #     if str(hot.destination_id) == dest:
+
+    #     #         retval.append(hot.to_json()) # Convert to string and add to return value
+    #     #         hotel_found = True
+
+    #     retval.extend([hot.to_json() for hotel_id in hotel_ids if str(hot.id) == hotel_id])
+
+    #     # if hotel_found:
+    #     #     continue
+
+    #     # for hotel_id in hotel_ids:
+    #     #     if hot.id == hotel_id:
+
+    #     #         retval.append(hot.to_json()) # Convert to string and add to return value
+
+    return json.dumps(retval)
+
+    # # Add the braces
+    # if retval != "":
+    #     retval = "[" + retval
+    #     retval += "]"        
+
+    # #return query_params
+    # return retval
+
+
 
 @bp.route('/', methods= ['GET'])
 def default_route():
