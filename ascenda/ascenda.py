@@ -90,6 +90,7 @@ def build_hotel_list():
             futures.append(executor.submit(hot.read_json_data()))
         concurrent.futures.wait(futures)
 
+
     # Dump to json
     # js = []
     # for hot in hotels:
@@ -104,7 +105,8 @@ def build_hotel_list():
 def query_hotel_id(ids):
     hotels = build_hotel_list()  # All hotel objects
 
-    ids = list(dict.fromkeys(ids)) # Remove duplicates
+    if len(ids) > 1:
+        ids = list(dict.fromkeys(ids)) # Remove duplicates
 
     retval = ""
     for id in ids:
